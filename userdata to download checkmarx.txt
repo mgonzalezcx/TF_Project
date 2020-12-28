@@ -1,0 +1,54 @@
+userdata to download checkmarx 
+
+# Install 7zip with Chocolatey - it has CLI unzip w/ password feature
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+cinst 7zip -y
+
+# Files are downloaded and unzipped to $destination
+$destination = "C:\cx"
+md -force "$destination\zips"
+
+# 9.3
+"3A39F38DC8E66725E818BEFAE7018B78EA5968C97D067A68DF5F9E160B7A8F85 https://download.checkmarx.com/9.3.0/CxSAST.930.Release.Setup_9.3.0.1122.zip",
+# 96751654ABB9DD9DB861AD9F91DB67B91D34623709386676BD5FEBB61F9B125D
+
+# 9.2
+"5R65S74517Q24H09385O https://download.checkmarx.com/9.2.0/CxSAST.920.Release.Setup-GitMigration_9.2.0.41015.zip",
+"nopass https://download.checkmarx.com/9.2.0/CP/CxSAST.9.2.0-CP9017.zip",
+"26S63LUS7LYBC7BSPEHX https://download.checkmarx.com/9.2.0/HF/9.2.0.HF8.zip",
+"TCZLFF1VWJLDMAIVL1DT https://download.checkmarx.com/9.2.0/HF/9.2.0.HF7.zip",
+"D2ML4AA1L143EF8V8N1B https://download.checkmarx.com/9.2.0/HF/9.2.0.HF6.zip",
+"VGKY2HWDVGJNFTVJC3ZV https://download.checkmarx.com/9.2.0/HF/9.2.0.HF4.zip",
+"7PVV4PIM1H0MDKXXFUGL https://download.checkmarx.com/9.2.0/HF/9.2.0.HF3.zip",
+
+# 9.0
+"5661S74U17H25D00Q851 https://download.checkmarx.com/9.0.0/CxSAST.900.Release.Setup-GitMigration_9.0.0.40085.zip",
+"nopass https://download.checkmarx.com/9.0.0/CP/CxSAST.9.0.0-CP9081.zip",
+"ZD3D273PVX1NBC70Z0WL https://download.checkmarx.com/9.0.0/HF/9.0.0.HF16.zip",
+"IZTBBIGZATZT2NS3PPTZ https://download.checkmarx.com/9.0.0/HF/9.0.0.HF14.zip",
+"TYTYDU2J3PFCSAHUV3YE https://download.checkmarx.com/9.0.0/HF/9.0.0.HF11.zip",
+"ZC5U67Y8OBJB0ZMJU348 https://download.checkmarx.com/9.0.0/HF/9.0.0.HF10.zip",
+"IILR0RU2LX501XJPERPK https://download.checkmarx.com/9.0.0/HF/9.0.0.HF9.zip",
+"08RFCPRFI5B0TJ7GIGCO https://download.checkmarx.com/9.0.0/HF/9.0.0.HF8.zip",
+"LU8M7IHBBXJGM2BXPZ6N https://download.checkmarx.com/9.0.0/HF/9.0.0.HF7.zip",
+"S700LOD117RMRR8804GO https://download.checkmarx.com/9.0.0/HF/9.0.0.HF5.zip",
+"ECVWFRSUJBWO4RN7ACJG https://download.checkmarx.com/9.0.0/HF/9.0.0.HF4.zip",
+"YL6XWE0ZVQ0OZLLR60J3 https://download.checkmarx.com/9.0.0/HF/9.0.0.HF3.zip",
+
+# 8.9
+"5F60O74C19T24105I87T https://download.checkmarx.com/8.9.0/CxSAST.890.Release.Setup_8.9.0.210.zip",
+"nopass https://download.checkmarx.com/8.9.0/CP/CxSAST.8.9.0-CP90212.zip",
+"NTERQC82PVK1R8P4NSIH https://download.checkmarx.com/8.9.0/HF/8.9.0.HF31.zip",
+"UCL3ZSG3MDZDCHX9TXTN https://download.checkmarx.com/8.9.0/HF/8.9.0.HF24.zip" | % {
+
+ $key = $_.split(" ")[0]
+$url = $_.split(" ")[1]
+$zip = $url.substring($url.lastindexof("/") + 1)
+$name = $zip.replace(".zip", "")
+if (!(Test-Path "$destination\$name")) {
+Write-Host "Downloading $url to $destination\$name"
+(New-Object System.Net.WebClient).DownloadFile($url, "$destination\$zip")
+Start-Process "C:\Program Files\7-Zip\7z.exe" -ArgumentList "x `"$destination\$zip`" -aos -o`"$destination\$name`" -p`"$key`"" -Wait -NoNewWindow
+move-item "$destination\$zip" "$destination\zips\$zip"
+}
+}
